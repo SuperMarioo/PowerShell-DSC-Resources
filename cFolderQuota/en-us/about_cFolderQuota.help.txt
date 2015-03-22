@@ -1,0 +1,61 @@
+﻿TOPIC 
+
+		about_cFolderQuota
+
+SHORT DESCRIPTION
+    
+	The FolderQuata DSC Resource helps Creating Quotas on Drive or Folders . 
+
+
+ATTRIBUTES
+
+		
+	Path -  The location of the Folder or Drive 
+	
+	Template -  Name of the Template to be used
+ 
+	Subfolders -  Specify if you want the Quota to be for childs of the Path. 
+
+
+SYNTAX
+	 
+
+	cFolderQuota [String]
+
+{
+    Path = [string]
+    Subfolders = [bool]
+    Template = [string]
+    [ DependsOn = [string[]] ]
+    [ Ensure = [string] { Absent | Present }  ]
+}
+
+
+
+
+EXAMPLES 
+
+
+
+	cFolderQuota London {
+
+        Path = "K:\London"
+        Ensure = "present"
+        Template = "London"
+        Subfolders = $true
+        
+        }
+
+This resource will create Quota on the child folders of  specified path , because Subfolders Atrribiute is set to True
+
+	
+  	cFolderQuota "New York"{
+
+        Path = "K:\New York"
+        Ensure = "present"
+        Template = "New York"
+        Subfolders = $false
+        DependsOn = "[cQuotaTemplate]NewYork"
+        }
+
+This resource  will create Quota under specified path with New York Template applied . 

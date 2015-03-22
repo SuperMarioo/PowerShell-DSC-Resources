@@ -1,0 +1,97 @@
+TOPIC 
+
+		about_cQuataTemplate
+
+SHORT DESCRIPTION
+    
+	The QuataTemplate DSC Resource helps Creating Quotas Templates. 
+
+
+ATTRIBUTES
+
+		
+	Name -  Name fo the Template.
+	
+	Size -  Size of the Template , you can use the following format : 10gb,100mb.
+ 
+	Body -  Message body for Threshold. 
+    
+    	Description - Description of your Template.
+
+    	MailTo - Email address , you can use the following format : Mario@gmail.com 
+    	or Mario@gmail.com;Administrator@gmail.com for 2 emails.
+    	If you type Owner this will assign the user who exceeded the threshold . 
+
+    
+    	Percentage - Percentage of Threshold 
+
+    	Soft -  If you want the Quata to be Soft.
+    
+    	Subject - Message subject.
+
+
+
+SYNTAX
+	 
+
+	cQuataTemplate [String]
+
+{
+    Name = [string]
+    Size = [Int64]
+    [ Body = [string] ]
+    [ DependsOn = [string[]] ]
+    [ Description = [string] ]
+    [ Ensure = [string] { Absent | Present }  ]
+    [ MailTo = [string] ]
+    [ Percentage = [Int64] ]
+    [ SoftLimit = [bool] ]
+    [ Subject = [string] ]
+
+}
+
+
+EXAMPLES 
+
+
+
+
+       cQuataTemplate London {
+ 
+        Name = "London "
+        Size = 10gb
+        Description = "London Template"
+        MailTo = "Administrator@supermario.com"
+        Body = "You have reached your limit of space"
+        Subject = "Quota limits has exceeded"
+        Percentage = 10
+        Ensure = "present"
+        SoftLimit =$true
+
+        }
+
+This resource will create London Quota Template with assigned parameters.
+
+
+    cQuataTemplate NewYork {
+
+        Name = "New York"
+        Size = 300MB
+        Description = "New York Template"
+        MailTo = "Owner"
+        Body = "You have reached  your Limit of space"
+        Subject = "Quota threshold has exceeded"
+        Percentage = 10
+        Ensure = "present"
+        SoftLimit =$false
+     
+       }
+
+This Resource will create New York Quota Template with specified parameters.
+Under Mailto we specified "Owner" so the email will be sent to the user who exceeded the threshold.
+
+
+
+
+
+
