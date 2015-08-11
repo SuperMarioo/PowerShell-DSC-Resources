@@ -11,25 +11,27 @@ class VSS {
 
 
            [DscProperty(Key)]
-           [string]$Volume
+           [string]$Drive
            
            [DscProperty(mandatory)]
            [string]$Size
 
            [DscProperty()]
            [Ensure] $Ensure = "Present"
+           
+
 
 
 [VSS] Get() {
 
 Write-Verbose "Getting Current Configuration"
 
-        $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $volume -or $_.DeviceID -eq $volume }
+        $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $this.Drive -or $_.DeviceID -eq $this.Drive }
         $shadow = Get-WmiObject -class win32_shadowcopy | Where { $_.VolumeName -eq $vol.DeviceID }
         $vssconfig =[hashtable]::new()
         
         $vssconfig.add("Ensure",$this.Ensure)
-        $vssconfig.add("Volume",$this.Volume)
+        $vssconfig.add("Drive",$this.Drive)
         $vssconfig.add("Size",$this.Size)
 
         return $vssconfig
@@ -37,7 +39,7 @@ Write-Verbose "Getting Current Configuration"
 }  
 
 [void] set() {
-                $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $this.volume -or $_.DeviceID -eq $this.volume }
+                $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $this.Drive -or $_.DeviceID -eq $this.Drive }
                 $shadow = Get-WmiObject -class win32_shadowcopy | Where { $_.VolumeName -eq $vol.DeviceID }
 
                      if ($this.Ensure -eq [ensure]::Present){
@@ -50,22 +52,22 @@ Write-Verbose "Getting Current Configuration"
 
                             Write-Verbose "Changing only the size"
                 
-                        vssadmin Resize ShadowStorage /For=$($this.Volume) /On=$($this.Volume) /MaxSize=$($this.Size)
+                        vssadmin Resize ShadowStorage /For=$($this.Drive) /On=$($this.Drive) /MaxSize=$($this.Size)
 
 
                         }elseif(-not $shadow -and $(-not($this.CheckDrive()))){
 
 
-                                  Write-Verbose " Getting Current Volume Drive "
+                                  Write-Verbose " Getting Current Drive Drive "
 
-                $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $this.Volume -or $_.DeviceID -eq $this.Volume }
+                $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $this.Drive -or $_.DeviceID -eq $this.Drive }
                 $WMI=[WMICLASS]"root\cimv2:win32_shadowcopy"
 
-                    Write-Verbose "Creating Shadow Copy on the Volume "
+                    Write-Verbose "Creating Shadow Copy on the Drive "
 
                 $WMI.create($vol.DeviceID, "ClientAccessible")
 
-                vssadmin Resize ShadowStorage /For=$($this.Volume) /On=$($this.Volume) /MaxSize=$($this.Size)
+                vssadmin Resize ShadowStorage /For=$($this.Drive) /On=$($this.Drive) /MaxSize=$($this.Size)
 
                         }
                     
@@ -73,10 +75,10 @@ Write-Verbose "Getting Current Configuration"
 
                  } else {
 
-                    Write-Verbose " Removing Shadow Copys on $($this.Volume) "
+                    Write-Verbose " Removing Shadow Copys on $($this.Drive) "
 
        
-                vssadmin delete shadows /for=$($this.Volume) /Quiet
+                vssadmin delete shadows /for=$($this.Drive) /Quiet
                         
                         $this.RemoveStorage()
  
@@ -90,7 +92,7 @@ Write-Verbose "Getting Current Configuration"
 
 Write-Verbose "Getting Current Configuration"
 
-        $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $this.Volume -or $_.DeviceID -eq $this.Volume }
+        $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $this.Drive -or $_.DeviceID -eq $this.Drive }
 
         $testingVolume  = Get-WmiObject -class win32_shadowcopy | Where { $_.VolumeName -eq $vol.DeviceID }
        
@@ -105,12 +107,12 @@ Write-Verbose "Getting Current Configuration"
 
                     if ($testingVolume -and $VolumeSizeResult -eq $true){
 
-                            Write-Verbose "Shadow Copy is Enabled on the $($this.Volume) Drive"
+                            Write-Verbose "Shadow Copy is Enabled on the $($this.Drive) Drive"
 
                             return $true
                     }else {
 
-                            Write-Verbose "Shadow Copy  is not  Enabled on the $($this.Volume) Drive where it should be Enabled"
+                            Write-Verbose "Shadow Copy  is not  Enabled on the $($this.Drive) Or the size is wrong"
                             return $false
 
                           }
@@ -119,13 +121,13 @@ Write-Verbose "Getting Current Configuration"
 
                     if ($testingVolume){
                         
-                        Write-Verbose "Shadow Copy  is Enabled on the $($this.Volume) Drive where it should be Disabled"
+                        Write-Verbose "Shadow Copy  is Enabled on the $($this.Drive) Drive where it should be Disabled"
 
                         return $false 
 
                     }else {
 
-                        Write-Verbose "Shadow Copy  is Disabled on the $($this.Volume) Drive"
+                        Write-Verbose "Shadow Copy  is Disabled on the $($this.Drive) Drive"
 
                         return $true
 
@@ -154,9 +156,9 @@ return $current
 
 [bool] CheckDrive (){
 
-## Checking Volume to Selected Drive
+## Checking Drive to Selected Drive
        
-        $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $this.Volume -or $_.DeviceID -eq $this.Volume }
+        $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $this.Drive -or $_.DeviceID -eq $this.Drive }
         
         $testingVolume  = Get-WmiObject -class win32_shadowcopy | Where { $_.VolumeName -eq $vol.DeviceID }
       if($testingVolume.count -gt 1)
@@ -173,7 +175,7 @@ return $current
         $currentVolume=""
 
         }
-## Using Regex to extract Volume 
+## Using Regex to extract Drive 
 
         [regex]$regex = "{(\S)*}"
         $extractedString = $regex.Matches($currentVolume) | foreach-object {$_.Value}
@@ -183,17 +185,17 @@ return $current
 
      IF ($extractedString)
      {
-        $Currentsize1 = (Get-WmiObject Win32_ShadowStorage |  where {$_.Volume -match $extractedString } ).maxspace
+        $Currentsize = (Get-WmiObject Win32_ShadowStorage |  where {$_.Volume -match $extractedString } ).maxspace
      
      }else 
      {
-        $Currentsize1 = ""
+        $Currentsize = ""
 
 
      }
         
     
-        $currensize = $this.CurrentSize($Currentsize1)
+        $currensize = $this.CurrentSize($Currentsize)
 
         $TestingResult = $this.size -eq  $currensize
         
@@ -207,7 +209,7 @@ return $TestingResult
 
 [void] RemoveStorage () {
 
-        $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $this.Volume -or $_.DeviceID -eq $this.Volume }
+        $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $this.Drive -or $_.DeviceID -eq $this.Drive }
 
     
         $AssignDrive = $vol.DeviceID
@@ -216,7 +218,7 @@ return $TestingResult
                 [regex]$regex = "{(\S)*}"
         $extractedString = $regex.Matches($AssignDrive) | foreach-object {$_.Value}
 
-        Get-WmiObject Win32_ShadowStorage |  where {$_.Volume -match $extractedString } | Remove-WmiObject -ErrorAction SilentlyContinue
+        Get-WmiObject Win32_ShadowStorage |  where {$_.Drive -match $extractedString } | Remove-WmiObject -ErrorAction SilentlyContinue
 
 
      
@@ -228,10 +230,10 @@ return $TestingResult
 
 [DscResource()]
 
-class VSSTask {
+class VSSTaskScheduler {
            
            [DscProperty(mandatory)]
-           [pscredential]$cred
+           [pscredential]$Credential
 
            [DscProperty()]
            [string]$TimeTrigger
@@ -246,7 +248,7 @@ class VSSTask {
            [Ensure] $Ensure = "Present"
 
 
-[VSSTask] Get() {
+[VSSTaskScheduler] Get() {
 
 Write-Verbose "Getting Current Configuration" 
 
@@ -300,13 +302,13 @@ return $vsstaskconfig
 
 
             Register-ScheduledJob –Name $this.TaskName  -ScriptBlock $param `
-            –Trigger $triggertime -ScheduledJobOption $joboption -ArgumentList ($deviceid) -Credential $this.cred
+            –Trigger $triggertime -ScheduledJobOption $joboption -ArgumentList ($deviceid) -Credential $this.Credential
 
 
 
             }else {
 
-                Write-Verbose " Removing Scheduled job $($this.TaskName) "
+                Write-Verbose "Removing Scheduled job $($this.TaskName) "
 
             Unregister-ScheduledJob -Name $this.TaskName
         
