@@ -235,14 +235,16 @@ class VSSTaskScheduler {
            [DscProperty(mandatory)]
            [pscredential]$Credential
 
-           [DscProperty()]
+           [DscProperty(mandatory)]
            [string]$TimeTrigger
-           
+
+           [DscProperty(mandatory)]
            [DscProperty(Key)]
            [string]$TaskName
 
-           [DscProperty()]
+           [DscProperty(mandatory)]
            [string]$Drive
+
 
            [DscProperty()]
            [Ensure] $Ensure = "Present"
