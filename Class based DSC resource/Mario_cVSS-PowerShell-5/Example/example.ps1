@@ -3,82 +3,111 @@
 
 configuration VSS
 {
+
     param (
 
         [Parameter(Mandatory)] 
         [pscredential]$cred
 
     )
-  Import-DscResource -ModuleName Mario_cVSS
- 
+
+
+
+        Import-DscResource -ModuleName Mario_cVSS
 
 
     node ("localhost")
     {
-       VSS Drive_C {
+      
 
-        Ensure = 'Present'
-        Size = '2.10GB'
-        Volume = 'C:'
+      VSS Disk_C {
 
-       }
+      Ensure = 'present'
+      Drive = "C:"
+      Size = 1Gb
+      
 
-       VSS Drive_D {
 
-        Ensure = 'Present'
-        Size = '2.90GB'
-        Volume = 'D:'
+      }
 
-       }
+      VSS Disk_D {
 
-      VSSTaskScheduler NewTask1 {
+      Ensure = 'present'
+      Drive = "D:"
+      Size = 1Gb
+      
 
-       Ensure = 'Present'
+
+      }
+
+      VSS Disk_F {
+
+      Ensure = 'present'
+      Drive = "F:"
+      Size = 1Gb
+      
+
+
+      }
+
+     VSS Disk_G {
+
+      Ensure = 'present'
+      Drive = "G:"
+      Size = 1Gb
+      
+
+
+      }
+
+
+
+
+
+      VSSTaskScheduler Disk_C {
+
+       Ensure = 'present'
        Drive = 'C:'
        TimeTrigger = '1:15 PM'
-       TaskName = 'Task1'
-       DependsOn = '[VSS]Drive_C'
+       TaskName = 'Disk_C'
        Credential = $cred
+       DependsOn = '[VSS]Disk_C'
 
-       }
+      }
 
+            VSSTaskScheduler Disk_D {
 
-
-       VSSTaskScheduler NewTask2 {
-
-       Ensure = 'Present'
-       Drive = 'C:'
-       TimeTrigger = '2:16 PM'
-       TaskName = 'Task2'
-       DependsOn = '[VSS]Drive_C'
-       Credential = $cred
-
-       }
-
-       
-       VSSTaskScheduler NewTask3 {
-
-       Ensure = 'Present'
+       Ensure = 'present'
        Drive = 'D:'
-       TimeTrigger = '7:17 PM'
-       TaskName = 'Task3'
-       DependsOn = '[VSS]Drive_D'
+       TimeTrigger = '1:15 PM'
+       TaskName = 'Disk_D'
        Credential = $cred
+       DependsOn = '[VSS]Disk_D'
 
-       }
+      }
 
-       VSSTaskScheduler NewTask4 {
+            VSSTaskScheduler Disk_F {
 
-       Ensure = 'Present'
-       Drive = 'D:'
-       TimeTrigger = '5:18 PM'
-       TaskName = 'Task4'
-       DependsOn = '[VSS]Drive_D'
+       Ensure = 'present'
+       Drive = 'F:'
+       TimeTrigger = '1:15 PM'
+       TaskName = 'Disk_F'
        Credential = $cred
+       DependsOn = '[VSS]Disk_F'
 
-       }
+      }
+
+            VSSTaskScheduler Disk_G {
+
+       Ensure = 'present'
+       Drive = 'G:'
+       TimeTrigger = '1:15 PM'
+       TaskName = 'Disk_G'
+       Credential = $cred
+       DependsOn = '[VSS]Disk_G'
+
+      }
 
 
-       
     }
 }
