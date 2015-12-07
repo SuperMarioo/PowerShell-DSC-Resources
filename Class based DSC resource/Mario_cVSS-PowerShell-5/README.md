@@ -20,7 +20,7 @@ Details
 **VSS** resource has following properties:
 
 - **Drive** - Specify Volume 
-- **Size** - Size of Shadow Storgare 
+- **Size** - Size of Shadow Storage 
 
 **VSSTaskScheduler** resource has following properties:
 
@@ -151,8 +151,6 @@ configuration VSS
       Ensure = 'present'
       Drive = "C:"
       Size = 4Gb
-
-      }
 
       }
 
