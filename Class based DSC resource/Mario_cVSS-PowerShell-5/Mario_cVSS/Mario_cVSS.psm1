@@ -48,7 +48,7 @@ Write-Verbose "Getting Current Configuration"
                         if($shadow -and $(-not($this.CheckDrive())))
                         {
 
-                                ## Changing the size ShadowStorage
+                                ## Changing the size of ShadowStorage
 
                             Write-Verbose "Changing only the size"
                 
@@ -58,7 +58,7 @@ Write-Verbose "Getting Current Configuration"
                         }elseif(-not $shadow -and $(-not($this.CheckDrive()))){
 
 
-                                  Write-Verbose " Getting Current Drive Drive "
+                                  Write-Verbose " Getting Current Drive "
 
                 $vol=Get-WmiObject -class win32_volume | Where { $_.DriveLetter -eq $this.Drive -or $_.DeviceID -eq $this.Drive }
                 $WMI=[WMICLASS]"root\cimv2:win32_shadowcopy"
@@ -164,6 +164,7 @@ return $current
       if($testingVolume.count -gt 1)
       {
         $currentVolume = $testingVolume.VolumeName[0]
+
       }elseif($testingVolume.count -eq 1)
         {
 
@@ -285,7 +286,7 @@ return $vsstaskconfig
                 Write-Verbose "Registering Scheduled Job $($this.TaskName) "
 
 
-                ## Register Scheduled job
+                ## Register Schedule job
             
             
             $triggertime = New-JobTrigger –Weekly –DaysOfWeek 1,2,3,4,5 –At $this.TimeTrigger 
