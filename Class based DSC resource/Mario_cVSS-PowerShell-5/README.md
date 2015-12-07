@@ -36,26 +36,7 @@ Versions
 - **VSS**
 - **VSSTaskScheduler**
 
-DataDisk -outputpath C:\DataDisk
-Start-DscConfiguration -Path C:\DataDisk -Wait -Force -Verbose
-```
-VSS [String] #ResourceName
-{
-    Drive = [string]
-    Size = [string]
-    [DependsOn = [string[]]]
-    [Ensure = [string]{ Absent | Present }]
-    [PsDscRunAsCredential = [PSCredential]]
-}
+Examples
+-------
 
- 
-VSSTaskScheduler [String] #ResourceName
-{
-    Credential = [PSCredential]
-    TaskName = [string]
-    [DependsOn = [string[]]]
-    [Drive = [string]]
-    [Ensure = [string]{ Absent | Present }]
-    [PsDscRunAsCredential = [PSCredential]]
-    [TimeTrigger = [string]]
-}
+
