@@ -7,6 +7,7 @@
 
 [DscResource()]
 
+
 class VSS {
 
 
@@ -143,7 +144,7 @@ Write-Verbose "Getting Current Configuration"
 
 ##Helper Methods
 
-[string] CurrentSize ($Currentsize) {
+<#[string] CurrentSize ($Currentsize) {
 
 
 $current = [string]::Format('{0:0.00}GB', $Currentsize / 1GB)
@@ -153,6 +154,9 @@ $current = [string]::Format('{0:0.00}GB', $Currentsize / 1GB)
 return $current
 
 }
+
+
+#>
 
 [bool] CheckDrive (){
 
@@ -196,9 +200,9 @@ return $current
      }
         
     
-        $currensize = $this.CurrentSize($Currentsize)
+        #$currensize = $this.CurrentSize($Currentsize)
 
-        $TestingResult = $this.size -eq  $currensize
+        $TestingResult = $this.size -eq  $Currentsize
         
         
 
@@ -227,6 +231,7 @@ return $TestingResult
 }
 
 }
+
 
 
 [DscResource()]
