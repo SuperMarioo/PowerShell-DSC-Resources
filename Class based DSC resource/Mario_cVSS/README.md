@@ -12,7 +12,7 @@ Installation
 Requirements
 -------
 
-This module requires the latest version of PowerShell v5.0 Production Preview or Windows 10 with the latest build 10586 . 
+This module requires the latest version of PowerShell v5.0 RTM or Windows 10 with the latest build 10586 . 
 
 Details
 -------
